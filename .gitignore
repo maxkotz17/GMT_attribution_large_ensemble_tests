@@ -5,9 +5,10 @@ __pycache__/
 .env
 
 # HPC / SLURM
-*.out
-*.err
+*out
+*err
 slurm-*.out
+temp/
 
 # Data files (usually too large for Git)
 *.nc
