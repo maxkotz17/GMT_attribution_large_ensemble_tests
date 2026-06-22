@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/gpfs/home/bsc/bsc400019/attribution_test/calc_ERA5_GMT.py", line 17, in <module>
+    x=xr.open_dataset(filen)
+  File "/home/bsc/bsc400019/.conda/envs/climate/lib/python3.13/site-packages/xarray/backends/api.py", line 577, in open_dataset
+    engine = plugins.guess_engine(filename_or_obj)
+  File "/home/bsc/bsc400019/.conda/envs/climate/lib/python3.13/site-packages/xarray/backends/plugins.py", line 212, in guess_engine
+    raise ValueError(error_msg)
+ValueError: did not find a match in any of xarray's currently installed IO backends ['netcdf4', 'scipy']. Consider explicitly selecting one of the installed engines via the ``engine`` parameter, or installing additional IO dependencies, see:
+https://docs.xarray.dev/en/stable/getting-started-guide/installing.html
+https://docs.xarray.dev/en/stable/user-guide/io.html

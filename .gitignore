@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.env
+
+# HPC / SLURM
+*.out
+*.err
+slurm-*.out
+
+# Data files (usually too large for Git)
+*.nc
+*.csv
+*.h5
+*.zarr/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS
+.DS_Store

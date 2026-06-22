@@ -1,0 +1,39 @@
+Traceback (most recent call last):
+  File "/gpfs/home/bsc/bsc400019/attribution_test/bootstrap_ensemble_members_lin.py", line 120, in <module>
+    climex = climex.reset_index("z").assign_coords(z=np.arange(18432)).drop_vars(["lat", "lon"])
+             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/home/bsc/bsc400019/.conda/envs/climate/lib/python3.13/site-packages/xarray/core/common.py", line 664, in assign_coords
+    data.coords.update(results)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/home/bsc/bsc400019/.conda/envs/climate/lib/python3.13/site-packages/xarray/core/coordinates.py", line 624, in update
+    coords, indexes = merge_coords(
+                      ~~~~~~~~~~~~^
+        [coords_to_align, other_coords],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        priority_arg=1,
+        ^^^^^^^^^^^^^^^
+        indexes=coords_to_align.xindexes,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/bsc/bsc400019/.conda/envs/climate/lib/python3.13/site-packages/xarray/structure/merge.py", line 601, in merge_coords
+    aligned = deep_align(
+        coerced, join=join, copy=False, indexes=indexes, fill_value=fill_value
+    )
+  File "/home/bsc/bsc400019/.conda/envs/climate/lib/python3.13/site-packages/xarray/structure/alignment.py", line 1031, in deep_align
+    aligned = align(
+        *targets,
+    ...<4 lines>...
+        fill_value=fill_value,
+    )
+  File "/home/bsc/bsc400019/.conda/envs/climate/lib/python3.13/site-packages/xarray/structure/alignment.py", line 967, in align
+    aligner.align()
+    ~~~~~~~~~~~~~^^
+  File "/home/bsc/bsc400019/.conda/envs/climate/lib/python3.13/site-packages/xarray/structure/alignment.py", line 660, in align
+    self.assert_unindexed_dim_sizes_equal()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/bsc/bsc400019/.conda/envs/climate/lib/python3.13/site-packages/xarray/structure/alignment.py", line 522, in assert_unindexed_dim_sizes_equal
+    raise AlignmentError(
+    ...<2 lines>...
+    )
+xarray.structure.alignment.AlignmentError: cannot reindex or align along dimension 'z' because of conflicting dimension sizes: {32768, 18432} (note: an index is found along that dimension with size=18432)

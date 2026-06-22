@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/gpfs/home/bsc/bsc400019/attribution_test/calc_ensemble_GMT.py", line 34, in <module>
+    yrend=int(filen[-11:-7])
+ValueError: invalid literal for int() with base 10: '231.'
