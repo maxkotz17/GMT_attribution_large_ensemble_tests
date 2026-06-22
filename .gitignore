@@ -16,6 +16,7 @@ archive/
 *.csv
 *.h5
 *.zarr/
+*.png
 
 # Jupyter
 .ipynb_checkpoints/
