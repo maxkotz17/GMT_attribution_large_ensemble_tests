@@ -122,6 +122,7 @@ GMT_expanded = GMT_expanded.assign_coords(z=multi_idx)
 
 preds=[]
 coefs=[]
+fails=[]
 np.random.seed(seed)
 
 for n in range(N):
@@ -146,7 +147,12 @@ for n in range(N):
 				X=pd.DataFrame({'gmts':GMT_r[m,:]})
 				X=sm.add_constant(X)
 				#run poisson regression with GMT for attribution
-				[pred,pred_link,resid,coef]=poiss_reg(X,y)
+				#IRLS can diverge for rare degenerate resampled series (e.g. a single extreme outlier year and no forced response): store NaN
+				try:
+					[pred,pred_link,resid,coef]=poiss_reg(X,y)
+				except ValueError:
+					coef=np.nan
+					fails.append((n,str(member),float(climex.lat[x]),float(climex.lon[x])))
 					
 				coefs[n][m].append(coef)
 				#preds[n][m].append(pred)
@@ -159,6 +165,10 @@ for n in range(N):
 coefs=np.array(coefs)
 coefs_df=xr.DataArray(data=coefs,dims=("sample",)+climex[:m+1,:,0].dims,coords={"sample":[x for x in range(N)],**climex[:m+1,:,0].coords},name="coef")
 coefs_df=coefs_df.unstack()
+coefs_df.attrs["n_failed_fits"]=len(fails)
+print("failed Poisson fits (stored as NaN): " + str(len(fails)) + " of " + str(N*len(members)*CL.shape[1]))
+for f in fails:
+	print("FAILED FIT sample=%d member=%s lat=%.2f lon=%.2f" % f)
 metric+="_agg_" + agg
 if membspec:
 	metric+="_membspec"
