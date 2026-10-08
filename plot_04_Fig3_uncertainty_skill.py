@@ -151,7 +151,7 @@ mat=cross.groupby(["model_bs","model_le"])["r"].median().unstack().loc[models,mo
 sns.heatmap(mat,ax=ax,cmap="Blues",annot=True,fmt=".2f",annot_kws={"fontsize":fs},linewidths=1,linecolor="white",square=True,
 	cbar_kws={"shrink":0.8},xticklabels=models,yticklabels=models)
 ax.collections[0].colorbar.ax.tick_params(labelsize=fs)
-ax.collections[0].colorbar.set_label("Median pattern correlation",fontsize=fs)
+ax.collections[0].colorbar.set_label("Median pattern correlation of\n"+r"relative uncertainty ($\chi$)",fontsize=fs)
 for k in range(3):
 	ax.add_patch(plt.Rectangle((k,k),1,1,fill=False,ec="k",lw=1))
 ax.set_xlabel("Large ensemble (reference)",fontsize=fs)
