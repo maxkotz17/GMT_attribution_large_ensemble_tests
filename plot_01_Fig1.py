@@ -126,7 +126,7 @@ for v, varn in enumerate(varns):
 				[pred,coefs]=lin_reg(GMT[m,:],climexs[v][m,:,x,x].values)		
 			climex_attr[v][m].append(pred)
 			#coefs_l.append(coefs[1])
-			print("done " + member)
+			pass
 
 climex_attr=np.squeeze(np.array(climex_attr))
 coefs=np.array(coefs_l)
@@ -136,68 +136,95 @@ fs=6
 cm=1/2.54
 w1=4.7*cm
 h1=4.5*cm
+city_labels=["Berlin (52.5°N, 13.4°E)","São Paulo (23.6°S, 46.6°W)"]
+
+#highlight three members spanning the range of attributable change in the first local panel (Berlin temperature extremes),
+#kept the same across all panels; all other members in grey, ensemble mean in black
+change=climex_attr-climex_attr[...,:1]
+order=np.argsort(change[0,:,0,-1])
+nm=len(members)
+hl=[order[int(0.1*nm)],order[nm//2],order[int(0.9*nm)]]
+hl_cols=["#1b9e77","#d95f02","#7570b3"]
+
+def plot_members(ax,x,Y):
+	#Y: (member, time)
+	for m in range(nm):
+		ax.plot(x,Y[m],c="grey",alpha=0.15,lw=0.5)
+	for k, m in enumerate(hl):
+		ax.plot(x,Y[m],c=hl_cols[k],lw=0.9)
+	ax.plot(x,Y.mean(axis=0),c="k",lw=1.3)
+
+def style(ax):
+	ax.tick_params(axis='both', labelsize=fs)
+	ax.grid(lw=0.4,alpha=0.4)
+	ax.set_axisbelow(True)
 
 plt.close()
 widths=[w1]*4
-heights=[h1*1.5]+[h1]*2
-cols=["tab:red","tab:blue"]
-fig=plt.figure(figsize=(sum(widths)+1.2,sum(heights)+1.1))
-gs=fig.add_gridspec(ncols=len(widths),nrows=len(heights),width_ratios=widths,height_ratios=heights,wspace=0.4,hspace=0.3)
+heights=[h1*1.3]+[h1]*2
+fig=plt.figure(figsize=(sum(widths)+1.4,sum(heights)+1.1))
+gs=fig.add_gridspec(ncols=len(widths),nrows=len(heights),width_ratios=widths,height_ratios=heights,wspace=0.45,hspace=0.4)
 
-#plot GMT
+#a: smoothed GMST
 ax=plt.subplot(gs[0,1:3])
-for m, member in enumerate(members):
-	if m<5:
-	        ax.plot(years,GMT[m,:],alpha=0.2,label=member)
-	else:
-		ax.plot(years,GMT[m,:],alpha=0.2)
+plot_members(ax,years,GMT.values)
 ax.set_xlabel('Year',fontsize=fs)
-ax.set_ylabel('Global-mean surface temperature (C)',fontsize=fs)
-ax.tick_params(axis='both', labelsize=fs)
-#ax.legend(fontsize=fs)
-ax.annotate("a",xy=(-0.05,1.05),xycoords="axes fraction",fontsize=fs+2,fontweight="bold")
+ax.set_ylabel('Global-mean surface temperature (°C)',fontsize=fs)
+style(ax)
+ax.annotate("a",xy=(-0.12,1.03),xycoords="axes fraction",fontsize=fs+2,fontweight="bold")
+handles=[plt.Line2D([],[],c=hl_cols[k],lw=0.9,label="Member "+str(members[m])) for k, m in enumerate(hl)]
+handles+=[plt.Line2D([],[],c="grey",alpha=0.4,lw=0.5,label="Other members"),plt.Line2D([],[],c="k",lw=1.3,label="Ensemble mean")]
+ax.legend(handles=handles,fontsize=fs,frameon=False,loc="upper left",bbox_to_anchor=(1.03,1))
 
 for v, varn in enumerate(varns):
 	if varn=="tas":
 		name="T"
-		unit="(C)"
+		unit="(°C)"
 	elif varn=="pr":
 		name="P"
-		unit="(mm)"
+		unit="(mm day$^{-1}$)"
 	if metric=="X5":
-		name+="X5d " + unit
+		name+="X5d"
 	elif metric=="0.99_exp":
-		name+="99p (days)"	
+		name+="99p"
+		unit="(days)"
 
 	for i in range(2):
-
-		#plot historical 
-		ax=plt.subplot(gs[1,v*2+i]) 
-		for m, member in enumerate(members):
-			ax.plot(years,climexs[v][m,:,i,i],alpha=0.2)
-
+		#b-e: local climate extremes
+		ax=plt.subplot(gs[1,v*2+i])
+		plot_members(ax,years,climexs[v][:,:,i,i].values)
+		ax.set_xticks([1960,2000])
 		ax.set_xlabel('Year',fontsize=fs)
 		if i==0:
-			ax.set_ylabel(name,fontsize=fs)
-		ax.tick_params(axis='both', labelsize=fs)
-		ax.set_title(cities[i] + " " + str(coords[i]),fontsize=fs)
-		ax.annotate(letters[1+v*2+i],xy=(-0.1,1.05),xycoords="axes fraction",fontsize=fs+2,fontweight="bold")
+			ax.set_ylabel(name+" "+unit,fontsize=fs)
+		style(ax)
+		ax.set_title(city_labels[i],fontsize=fs)
+		ax.annotate(letters[1+v*2+i],xy=(-0.12,1.05),xycoords="axes fraction",fontsize=fs+2,fontweight="bold")
 
-		#plot after attribution
+		#f-i: change correlated with GMST since the first year (fitted values relative to the first year), with the
+		#distribution of the final attributable change across members on the right
 		ax=plt.subplot(gs[2,v*2+i])
-		for m, member in enumerate(members):
-			ax.plot(years,climex_attr[v,m,i,:],alpha=0.2)
-
+		Y=change[v,:,i,:]
+		plot_members(ax,years,Y)
+		ax.axhline(0,c="k",lw=0.5,ls=":")
+		ax.set_xticks([1960,2000])
 		ax.set_xlabel('Year',fontsize=fs)
 		if i==0:
-		       ax.set_ylabel(name + " - attributable",fontsize=fs)
-		ax.tick_params(axis='both', labelsize=fs)
-		ax.annotate(letters[5+v*2+i],xy=(-0.1,1.05),xycoords="axes fraction",fontsize=fs+2,fontweight="bold")
+			ax.set_ylabel("Attributable change in\n"+name+" since "+str(int(years[0]))+" "+unit,fontsize=fs)
+		style(ax)
+		ax.annotate(letters[5+v*2+i],xy=(-0.12,1.05),xycoords="axes fraction",fontsize=fs+2,fontweight="bold")
+		axh=make_axes_locatable(ax).append_axes("right",size="22%",pad=0.03,sharey=ax)
+		axh.hist(Y[:,-1],bins=15,orientation="horizontal",color="grey",alpha=0.5)
+		for k, m in enumerate(hl):
+			axh.axhline(Y[m,-1],c=hl_cols[k],lw=0.9)
+		axh.axhline(Y.mean(axis=0)[-1],c="k",lw=1.3)
+		axh.tick_params(axis="y",labelleft=False)
+		axh.tick_params(axis="x",labelsize=fs-1)
+		axh.set_xlabel("Members",fontsize=fs-1)
 
 if membspec:
-	plt.savefig('figs/member_examples/' + model + "_taspr_" + metric + '_' + '_example_membspec.png',bbox_inches='tight',dpi=300)
+	plt.savefig('figs/member_examples/' + model + "_taspr_" + metric + '_' + '_example_membspec_v2.png',bbox_inches='tight',dpi=300)
 else:
-	plt.savefig('figs/member_examples/' + model + "_taspr_" + metric + '_' + '_example.png',bbox_inches='tight',dpi=300)
+	plt.savefig('figs/member_examples/' + model + "_taspr_" + metric + '_' + '_example_v2.png',bbox_inches='tight',dpi=300)
 plt.close()
-
-
+print("highlighted members:",[str(members[m]) for m in hl])
