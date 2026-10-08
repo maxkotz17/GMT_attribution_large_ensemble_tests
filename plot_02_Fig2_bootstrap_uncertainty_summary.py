@@ -10,7 +10,7 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 import matplotlib.colors as mcolors
 from matplotlib import gridspec
 import sys
-from matplotlib.colors import TwoSlopeNorm, LogNorm
+from matplotlib.colors import TwoSlopeNorm
 import glob
 import cartopy.crs as ccrs
 import string
@@ -79,9 +79,9 @@ if varn=="tas":
 elif varn=="pr":
 	vmax=200
 #absolute uncertainty in % per K (Poisson slopes x100, i.e. approximately % change in frequency per K; PX5d already in % of the
-#1940-1979 mean per K), on a log scale shared across models
+#1940-1979 mean per K), on a linear scale from 0 shared across models, with the colour map of the relative uncertainty
 sig_scale=100 if "0.99" in metric else 1
-sig_norm=LogNorm(vmin=4,vmax=60)
+sig_vmax=50
 sig_label="Absolute uncertainty, $\\sigma$ (% K$^{-1}$)"
 
 fs=7
@@ -148,7 +148,7 @@ for m, model in enumerate(models):
 		corrws_sig=[np.round(pat_corr_wght(coefs_std,coefs_bs_std[mem,...]),decimals=2) for mem in range(len(members))]
 		map_LE=sig_scale*coefs_std
 		maps_BS=sig_scale*coefs_bs_std
-		map_kw={"cmap":"magma_r","norm":sig_norm}
+		map_kw={"cmap":"viridis","vmin":0,"vmax":sig_vmax}
 		cb_label=sig_label
 	else:
 		map_LE=coefs_relerr
@@ -161,13 +161,9 @@ for m, model in enumerate(models):
 	#one shared colour bar (drawn once)
 	if m==0:
 		cax = fig.add_subplot(gs[-1,1:3])
-		pl3=map_LE.plot(ax=ax3,transform=ccrs.PlateCarree(),cbar_ax=cax,add_colorbar=True,cbar_kwargs={"orientation": "horizontal","label":cb_label,"extend":"both" if sigma else "neither"},**map_kw)
+		pl3=map_LE.plot(ax=ax3,transform=ccrs.PlateCarree(),cbar_ax=cax,add_colorbar=True,cbar_kwargs={"orientation": "horizontal","label":cb_label,"extend":"max" if sigma else "neither"},**map_kw)
 		cbar=pl3.colorbar
 		cbar.set_label(cb_label,fontsize=fs,rotation=0)
-		if sigma:
-			cbar.set_ticks([5,10,20,40,60])
-			cbar.set_ticklabels(["5","10","20","40","60"])
-			cbar.ax.minorticks_off()
 		cbar.ax.tick_params(labelsize=fs)
 	else:
 		map_LE.plot(ax=ax3,transform=ccrs.PlateCarree(),add_colorbar=False,**map_kw)
