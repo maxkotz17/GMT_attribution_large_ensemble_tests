@@ -10,7 +10,7 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 import matplotlib.colors as mcolors
 from matplotlib import gridspec
 import sys
-from matplotlib.colors import TwoSlopeNorm
+from matplotlib.colors import TwoSlopeNorm, LogNorm
 import glob
 import cartopy.crs as ccrs
 import string
@@ -68,6 +68,9 @@ varn=sys.argv[1]
 metric=sys.argv[2]
 W=int(sys.argv[3])
 endyr=sys.argv[4]
+#optional: "sigma" plots absolute uncertainty (standard deviation of the slope) for the same members as the relative uncertainty
+#figure (best, median and worst pattern correlation of relative uncertainty), with titles giving both pattern correlations
+sigma=len(sys.argv)>5 and sys.argv[5]=="sigma"
 
 folder="/gpfs/scratch/bsc32/bsc400019/"
 
@@ -75,6 +78,11 @@ if varn=="tas":
 	vmax=100
 elif varn=="pr":
 	vmax=200
+#absolute uncertainty in % per K (Poisson slopes x100, i.e. approximately % change in frequency per K; PX5d already in % of the
+#1940-1979 mean per K), on a log scale shared across models
+sig_scale=100 if "0.99" in metric else 1
+sig_norm=LogNorm(vmin=4,vmax=60)
+sig_label="Absolute uncertainty, $\\sigma$ (% K$^{-1}$)"
 
 fs=7
 cm=1/2.54
@@ -136,14 +144,33 @@ for m, model in enumerate(models):
 	corrws=[]
 	for mem, member in enumerate(members):
 		corrws.append(np.round(pat_corr_wght(coefs_relerr,coefs_bs_relerr[mem,...]),decimals=2))	
+	if sigma:
+		corrws_sig=[np.round(pat_corr_wght(coefs_std,coefs_bs_std[mem,...]),decimals=2) for mem in range(len(members))]
+		map_LE=sig_scale*coefs_std
+		maps_BS=sig_scale*coefs_bs_std
+		map_kw={"cmap":"magma_r","norm":sig_norm}
+		cb_label=sig_label
+	else:
+		map_LE=coefs_relerr
+		maps_BS=coefs_bs_relerr
+		map_kw={"cmap":"viridis","vmin":0,"vmax":vmax}
+		cb_label="Relative uncertainty (%)"
 	
 	#plot the true ensemble relative uncertainty
 	ax3 = fig.add_subplot(gs[m,0], projection=projection)
-	cax = fig.add_subplot(gs[-1,1:3])
-	pl3=coefs_relerr.plot(ax=ax3,transform=ccrs.PlateCarree(),cmap="viridis",vmin=0,vmax=vmax,cbar_ax=cax,add_colorbar=True,cbar_kwargs={"orientation": "horizontal","label":"Relative uncertainty (%)"})
-	cbar=pl3.colorbar
-	cbar.set_label("Relative uncertainty (%)",fontsize=fs,rotation=0)
-	cbar.ax.tick_params(labelsize=fs)
+	#one shared colour bar (drawn once)
+	if m==0:
+		cax = fig.add_subplot(gs[-1,1:3])
+		pl3=map_LE.plot(ax=ax3,transform=ccrs.PlateCarree(),cbar_ax=cax,add_colorbar=True,cbar_kwargs={"orientation": "horizontal","label":cb_label,"extend":"both" if sigma else "neither"},**map_kw)
+		cbar=pl3.colorbar
+		cbar.set_label(cb_label,fontsize=fs,rotation=0)
+		if sigma:
+			cbar.set_ticks([5,10,20,40,60])
+			cbar.set_ticklabels(["5","10","20","40","60"])
+			cbar.ax.minorticks_off()
+		cbar.ax.tick_params(labelsize=fs)
+	else:
+		map_LE.plot(ax=ax3,transform=ccrs.PlateCarree(),add_colorbar=False,**map_kw)
 	ax3.coastlines()
 	ax3.set_xticklabels([])
 	ax3.set_yticklabels([])
@@ -167,15 +194,19 @@ for m, model in enumerate(models):
 
 		ax3=fig.add_subplot(gs[m,1+i],projection=projection)
 		
-		coefs_bs_relerr[mem,...].plot(ax=ax3,transform=ccrs.PlateCarree(),cmap="viridis",vmin=0,vmax=vmax,add_colorbar=False)
+		maps_BS[mem,...].plot(ax=ax3,transform=ccrs.PlateCarree(),add_colorbar=False,**map_kw)
 		ax3.coastlines()
-		ax3.set_title("Member " + member +": " + str(corrws[mem]),fontsize=fs)
+		if sigma:
+			ax3.set_title("Member " + member +": $\\sigma$ " + str(corrws_sig[mem]) + " ($\\chi$ " + str(corrws[mem]) + ")",fontsize=fs)
+		else:
+			ax3.set_title("Member " + member +": " + str(corrws[mem]),fontsize=fs)
+		print(model,["best","median","worst"][i],member,"chi r",corrws[mem],("sigma r "+str(corrws_sig[mem])) if sigma else "")
 		ax3.set_xticklabels([])
 		ax3.set_yticklabels([])	
 		ax3.set_xlabel("")
 		ax3.set_ylabel("")
 		ax3.annotate(letters[m*4+i+1],xy=(-0.1,1.05),xycoords="axes fraction",fontsize=fs+2,fontweight="bold")
 
-plt.savefig('figs/boot_stats/' + varn + '_' + metric + '_block' + str(W) + '_summary_' + endyr + '.png',bbox_inches='tight',dpi=300)
+plt.savefig('figs/boot_stats/' + varn + '_' + metric + '_block' + str(W) + '_summary_' + endyr + ('_sigma' if sigma else '') + '.png',bbox_inches='tight',dpi=300)
 plt.close()
 
