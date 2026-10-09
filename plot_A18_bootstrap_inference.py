@@ -9,6 +9,7 @@ from matplotlib.lines import Line2D
 #b: by bin of bootstrapped relative uncertainty, the fraction of grid-cells with large-ensemble relative uncertainty below 100%
 #c: by bin of bootstrapped relative uncertainty, the fraction of grid-cells in which the sign of the bootstrapped slope
 #   matches that of the forced response
+#b,c: bins with bootstrapped relative uncertainty above 200% are not shown
 #area-weighted and pooled across members; lines: mean across models, shading: range across models
 #inputs from 20_bootstrap_ci_reliability.py
 
@@ -64,9 +65,12 @@ axs[1].set_ylabel("Grid-cells with large-ensemble\n"+r"$\chi$ below 100% (%)",fo
 axs[1].set_ylim([0,100])
 axs[2].set_ylabel("Grid-cells with sign of forced\nresponse correctly identified (%)",fontsize=fs)
 axs[2].set_ylim([0,100])
+#chance of identifying the sign correctly without information
+axs[2].axhline(50,c="k",lw=0.8,ls=":")
+axs[2].legend(handles=[Line2D([],[],c="k",lw=0.8,ls=":",label="Random guess")],fontsize=fs-1,loc="lower left",frameon=False)
+#restricted to bootstrapped relative uncertainty up to 200%, beyond which a signal would not be considered attributable
 for ax in axs[1:]:
-	ax.set_xscale("log")
-	ax.set_xlim([10,1000])
+	ax.set_xlim([0,200])
 	ax.set_xlabel("Relative uncertainty from\n"+r"bootstrap, $\chi$ (%)",fontsize=fs)
 for ax, letter in zip(axs,"abc"):
 	style(ax)
