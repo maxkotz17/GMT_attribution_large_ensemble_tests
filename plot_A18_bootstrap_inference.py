@@ -63,7 +63,7 @@ axs[0].legend(handles=[Line2D([],[],c=col,lw=1.2,label=lab) for lab, t, col in m
 axs[1].set_ylabel("Grid-cells with large-ensemble\n"+r"$\chi$ below 100% (%)",fontsize=fs)
 axs[1].set_ylim([0,100])
 axs[2].set_ylabel("Grid-cells with sign of forced\nresponse correctly identified (%)",fontsize=fs)
-axs[2].set_ylim([50,100])
+axs[2].set_ylim([0,100])
 for ax in axs[1:]:
 	ax.set_xscale("log")
 	ax.set_xlim([10,1000])
