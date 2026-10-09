@@ -164,7 +164,7 @@ plt.close()
 widths=[w1]*4
 heights=[h1*1.3]+[h1]*2
 fig=plt.figure(figsize=(sum(widths)+1.4,sum(heights)+1.1))
-gs=fig.add_gridspec(ncols=len(widths),nrows=len(heights),width_ratios=widths,height_ratios=heights,wspace=0.6,hspace=0.45)
+gs=fig.add_gridspec(ncols=len(widths),nrows=len(heights),width_ratios=widths,height_ratios=heights,wspace=0.75,hspace=0.45)
 
 #a: smoothed GMST
 ax=plt.subplot(gs[0,1:3])
@@ -229,7 +229,7 @@ for v, varn in enumerate(varns):
 		axh.axhline(0,c="k",lw=0.5,ls=":")
 		axh.yaxis.tick_right()
 		axh.yaxis.set_label_position("right")
-		axh.set_title(r"$\beta$"+"\n"+slope_unit,fontsize=fs-1)
+		axh.set_title(r"$\beta$ "+slope_unit,fontsize=fs-1)
 		axh.tick_params(axis="both",labelsize=fs-1)
 		axh.set_xlabel("Members",fontsize=fs-1)
 		print(name,city_labels[i],"chi %.0f%%"%chi)
