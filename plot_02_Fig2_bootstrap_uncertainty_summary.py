@@ -68,8 +68,10 @@ varn=sys.argv[1]
 metric=sys.argv[2]
 W=int(sys.argv[3])
 endyr=sys.argv[4]
-#optional: "sigma" plots absolute uncertainty (standard deviation of the slope) for the same members as the relative uncertainty
-#figure (best, median and worst pattern correlation of relative uncertainty), with titles giving both pattern correlations
+#coefficient file suffix: none for metrics without an end-year variant (e.g. tas X5)
+sfx="" if endyr=="none" else "_"+endyr
+#optional: "sigma" plots absolute uncertainty (standard deviation of the slope) instead of relative uncertainty, for the members
+#with the best, median and worst pattern correlation of absolute uncertainty with the large ensemble
 sigma=len(sys.argv)>5 and sys.argv[5]=="sigma"
 
 folder="/gpfs/scratch/bsc32/bsc400019/"
@@ -78,7 +80,7 @@ if varn=="tas":
 	vmax=100
 elif varn=="pr":
 	vmax=200
-#absolute uncertainty in % per K (Poisson slopes x100, i.e. approximately % change in frequency per K; PX5d already in % of the
+#absolute uncertainty in % per K (Poisson slopes x100, i.e. approximately % change in frequency per K; P5d already in % of the
 #1940-1979 mean per K), on a linear scale from 0 shared across models, with the colour map of the relative uncertainty
 sig_scale=100 if "0.99" in metric else 1
 sig_vmax=50
@@ -111,7 +113,7 @@ for m, model in enumerate(models):
 		coefs_av=coefs.coef[:,:,:].mean(dim="member")
 		coefs_std=coefs.coef[:,:,:].std(dim="member")
 	else:
-		coefs=xr.open_dataset(folder + "attribution/attr_coefs_" + model + "_" + varn + "_" + metric + "_" + endyr + ".nc")
+		coefs=xr.open_dataset(folder + "attribution/attr_coefs_" + model + "_" + varn + "_" + metric + sfx + ".nc")
 		coefs_av=coefs.coef.mean(dim="member")
 		coefs_std=coefs.coef.std(dim="member")
 
@@ -122,7 +124,7 @@ for m, model in enumerate(models):
 
 	#Bootstrap results
 	if "X" in metric:
-		coefs_bs=xr.open_dataset(folder + "attribution/bootstrap/attr_coefs_" + model + "_" + varn + "_" + metric + "_block"+str(W)+"_" + endyr + ".nc")
+		coefs_bs=xr.open_dataset(folder + "attribution/bootstrap/attr_coefs_" + model + "_" + varn + "_" + metric + "_block"+str(W) + sfx + ".nc")
 	else:	
 		#load all the samples from the bootstrap
 		files=np.sort(glob.glob(folder + "attribution/bootstrap/attr_coefs_" + model + "_" + varn + "_" + metric + "_block"+str(W)+"_seed*.nc"))
@@ -154,14 +156,14 @@ for m, model in enumerate(models):
 		map_LE=coefs_relerr
 		maps_BS=coefs_bs_relerr
 		map_kw={"cmap":"viridis","vmin":0,"vmax":vmax}
-		cb_label="Relative uncertainty (%)"
+		cb_label=r"Relative uncertainty, $\chi$ (%)"
 	
 	#plot the true ensemble relative uncertainty
 	ax3 = fig.add_subplot(gs[m,0], projection=projection)
 	#one shared colour bar (drawn once)
 	if m==0:
 		cax = fig.add_subplot(gs[-1,1:3])
-		pl3=map_LE.plot(ax=ax3,transform=ccrs.PlateCarree(),cbar_ax=cax,add_colorbar=True,cbar_kwargs={"orientation": "horizontal","label":cb_label,"extend":"max" if sigma else "neither"},**map_kw)
+		pl3=map_LE.plot(ax=ax3,transform=ccrs.PlateCarree(),cbar_ax=cax,add_colorbar=True,cbar_kwargs={"orientation": "horizontal","label":cb_label,"extend":"max"},**map_kw)
 		cbar=pl3.colorbar
 		cbar.set_label(cb_label,fontsize=fs,rotation=0)
 		cbar.ax.tick_params(labelsize=fs)
@@ -178,7 +180,7 @@ for m, model in enumerate(models):
 
 	#plot the bootstrapped relative uncertainties, for best, worst and median model fit
 	for i in range(3):
-		indexs=np.argsort(corrws)
+		indexs=np.argsort(corrws_sig if sigma else corrws)
 		
 		if i==0:
 			member=np.array(members)[indexs[-1]]
@@ -193,9 +195,9 @@ for m, model in enumerate(models):
 		maps_BS[mem,...].plot(ax=ax3,transform=ccrs.PlateCarree(),add_colorbar=False,**map_kw)
 		ax3.coastlines()
 		if sigma:
-			ax3.set_title("Member " + member +": $\\sigma$ " + str(corrws_sig[mem]) + " ($\\chi$ " + str(corrws[mem]) + ")",fontsize=fs)
+			ax3.set_title("Member " + member +r": $\sigma$ " + str(corrws_sig[mem]),fontsize=fs)
 		else:
-			ax3.set_title("Member " + member +": " + str(corrws[mem]),fontsize=fs)
+			ax3.set_title("Member " + member +r": $\chi$ " + str(corrws[mem]),fontsize=fs)
 		print(model,["best","median","worst"][i],member,"chi r",corrws[mem],("sigma r "+str(corrws_sig[mem])) if sigma else "")
 		ax3.set_xticklabels([])
 		ax3.set_yticklabels([])	

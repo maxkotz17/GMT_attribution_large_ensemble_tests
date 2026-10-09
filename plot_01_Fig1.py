@@ -119,16 +119,17 @@ for v, varn in enumerate(varns):
 	climex_attr.append([])
 	for m, member in enumerate(list(members)):
 		climex_attr[v].append([])
+		coefs_l[v].append([])
 		for x in range(climexs[v].shape[-1]):
 			if "exp" in metric:
 				[pred,pred_link,resids,coefs]=poiss_reg(GMT[m,:],climexs[v][m,:,x,x].values)
 			elif "X" in metric:
 				[pred,coefs]=lin_reg(GMT[m,:],climexs[v][m,:,x,x].values)		
 			climex_attr[v][m].append(pred)
-			#coefs_l.append(coefs[1])
-			pass
+			coefs_l[v][m].append(coefs)
 
 climex_attr=np.squeeze(np.array(climex_attr))
+#GMST regression slopes (variable, member, location)
 coefs=np.array(coefs_l)
 
 letters=list(string.ascii_lowercase)
@@ -163,7 +164,7 @@ plt.close()
 widths=[w1]*4
 heights=[h1*1.3]+[h1]*2
 fig=plt.figure(figsize=(sum(widths)+1.4,sum(heights)+1.1))
-gs=fig.add_gridspec(ncols=len(widths),nrows=len(heights),width_ratios=widths,height_ratios=heights,wspace=0.45,hspace=0.4)
+gs=fig.add_gridspec(ncols=len(widths),nrows=len(heights),width_ratios=widths,height_ratios=heights,wspace=0.6,hspace=0.45)
 
 #a: smoothed GMST
 ax=plt.subplot(gs[0,1:3])
@@ -184,10 +185,12 @@ for v, varn in enumerate(varns):
 		name="P"
 		unit="(mm day$^{-1}$)"
 	if metric=="X5":
-		name+="X5d"
+		name+="5d"
+		slope_unit="("+unit[1:-1]+" K$^{-1}$)"
 	elif metric=="0.99_exp":
 		name+="99p"
 		unit="(days)"
+		slope_unit="(K$^{-1}$)"
 
 	for i in range(2):
 		#b-e: local climate extremes
@@ -202,7 +205,7 @@ for v, varn in enumerate(varns):
 		ax.annotate(letters[1+v*2+i],xy=(-0.12,1.05),xycoords="axes fraction",fontsize=fs+2,fontweight="bold")
 
 		#f-i: change correlated with GMST since the first year (fitted values relative to the first year), with the
-		#distribution of the final attributable change across members on the right
+		#distribution of the GMST regression slope across members on the right and its relative uncertainty (eq. 3)
 		ax=plt.subplot(gs[2,v*2+i])
 		Y=change[v,:,i,:]
 		plot_members(ax,years,Y)
@@ -213,14 +216,23 @@ for v, varn in enumerate(varns):
 			ax.set_ylabel("Attributable change in\n"+name+" since "+str(int(years[0]))+" "+unit,fontsize=fs)
 		style(ax)
 		ax.annotate(letters[5+v*2+i],xy=(-0.12,1.05),xycoords="axes fraction",fontsize=fs+2,fontweight="bold")
-		axh=make_axes_locatable(ax).append_axes("right",size="22%",pad=0.03,sharey=ax)
-		axh.hist(Y[:,-1],bins=15,orientation="horizontal",color="grey",alpha=0.5)
+		beta=coefs[v,:,i]
+		#slopes as estimated (Poisson: change in log frequency per K), on which chi is computed
+		b=beta
+		chi=100*beta.std()/np.abs(beta.mean())
+		ax.annotate(r"$\chi$ = "+str(int(round(chi)))+"%",xy=(0.04,0.9),xycoords="axes fraction",fontsize=fs)
+		axh=make_axes_locatable(ax).append_axes("right",size="28%",pad=0.05)
+		axh.hist(b,bins=15,orientation="horizontal",color="grey",alpha=0.5)
 		for k, m in enumerate(hl):
-			axh.axhline(Y[m,-1],c=hl_cols[k],lw=0.9)
-		axh.axhline(Y.mean(axis=0)[-1],c="k",lw=1.3)
-		axh.tick_params(axis="y",labelleft=False)
-		axh.tick_params(axis="x",labelsize=fs-1)
+			axh.axhline(b[m],c=hl_cols[k],lw=0.9)
+		axh.axhline(b.mean(),c="k",lw=1.3)
+		axh.axhline(0,c="k",lw=0.5,ls=":")
+		axh.yaxis.tick_right()
+		axh.yaxis.set_label_position("right")
+		axh.set_title(r"$\beta$"+"\n"+slope_unit,fontsize=fs-1)
+		axh.tick_params(axis="both",labelsize=fs-1)
 		axh.set_xlabel("Members",fontsize=fs-1)
+		print(name,city_labels[i],"chi %.0f%%"%chi)
 
 if membspec:
 	plt.savefig('figs/member_examples/' + model + "_taspr_" + metric + '_' + '_example_membspec_v2.png',bbox_inches='tight',dpi=300)

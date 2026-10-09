@@ -89,7 +89,7 @@ gs_top=gs0[0].subgridspec(1,2,wspace=0.5)
 gs_bot=gs0[1].subgridspec(1,2,wspace=0.85)
 xlim=[relerrs[0],relerrs[-1]]
 #panels a-b share the same x-axis: thresholds of relative uncertainty due to internal variability
-xlab="Relative uncertainty due to\ninternal variability, X (%)"
+xlab="Relative uncertainty due to internal\n"+r"variability, $\chi$ = X (%)"
 model_handles=[Line2D([],[],c=cols[m],lw=1.5,label=models[m]) for m in range(3)]
 
 #a: cumulative area below a given relative uncertainty, large ensemble vs. bootstrapped members
@@ -107,7 +107,7 @@ if ERA5:
 	handles.append(Line2D([],[],c="k",lw=1.5,ls="--",label="ERA5: bootstrap"))
 ax.legend(handles=handles,fontsize=fs-1,loc=leg_loc,frameon=False)
 ax.set_xlabel(xlab,fontsize=fs)
-ax.set_ylabel("Fraction of global surface area below X",fontsize=fs)
+ax.set_ylabel("Fraction of global surface area\n"+r"with $\chi$ below X",fontsize=fs)
 ax.set_xlim(xlim)
 ax.set_ylim([0,1])
 style(ax)
@@ -127,7 +127,7 @@ for m, model in enumerate(models):
 noskill=[Line2D([],[],c="grey",lw=1,ls=":",label="Random guess")]
 ax.legend(handles=(model_handles if varn=="tas" else [])+noskill,fontsize=fs-1,loc=leg_loc,frameon=False)
 ax.set_xlabel(xlab,fontsize=fs)
-ax.set_ylabel("Precision: fraction of area identified\nbelow X that is truly below X",fontsize=fs)
+ax.set_ylabel("Precision: fraction of area identified\n"+r"with $\chi$ below X that is truly below X",fontsize=fs)
 ax.set_xlim(xlim)
 ax.set_ylim([0,1])
 style(ax)
@@ -139,11 +139,11 @@ ax=fig.add_subplot(gs_bot[0])
 df=obs.rename(columns={"r_obs":"Pattern cor"})
 sns.violinplot(data=df,x="model",y="Pattern cor",order=models,ax=ax,palette=cols,hue="model",hue_order=models,legend=False,linewidth=0.6)
 ax.set_ylim([0,1])
-ax.set_ylabel("Weighted pattern correlation between\nlarge ensemble and bootstrapped members",fontsize=fs)
+ax.set_ylabel(r"Weighted pattern correlation of $\chi$ between"+"\nlarge ensemble and bootstrapped members",fontsize=fs)
 ax.set_xlabel("Model",fontsize=fs)
 plt.setp(ax.get_xticklabels(),rotation=20,ha="right")
 style(ax)
-annotate_panel(ax,"c",x=-0.32)
+annotate_panel(ax,"c",x=-0.4)
 
 #d: median pattern correlation with each model's large ensemble (rows: bootstrapped model, evaluated on its own grid)
 ax=fig.add_subplot(gs_bot[1])

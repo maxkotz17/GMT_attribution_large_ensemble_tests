@@ -26,11 +26,11 @@ cols=["tab:blue","tab:orange","tab:green"]
 skill="/gpfs/scratch/bsc32/bsc400019/attribution/skill/"
 tag=varn+"_"+metric+"_block"+str(W)+"_"+str(relerr_cutoff)+endyr
 #metrics of panels b and d: label, file tag, colour (warm: temperature, cool: precipitation)
-metrics=[(r"$TX5d$","tas_X5_block5_100","#b2182b"),
+metrics=[(r"$T5d$","tas_X5_block5_100","#b2182b"),
 	(r"$T99p$","tas_0.99_exp_agg_NOPE_membspec_block5_100","#ef8a62"),
-	(r"$PX5d$","pr_X5_block5_200_2025","#2166ac"),
+	(r"$P5d$","pr_X5_block5_200_2025","#2166ac"),
 	(r"$P99p$","pr_0.99_exp_agg_NOPE_membspec_block5_200","#67a9cf"),
-	(r"$PX5d$"+"\n(1940-2100)","pr_X5_block5_200_2100","#542788")]
+	(r"$P5d$"+"\n(1940-2100)","pr_X5_block5_200_2100","#542788")]
 
 relerrs=[(x+1)*10 for x in range(20)]
 
@@ -70,8 +70,8 @@ for m, model in enumerate(models):
 	ax.fill_between(relerrs,np.percentile(af_BS,5,axis=0),np.percentile(af_BS,95,axis=0),color=cols[m],alpha=0.15,lw=0)
 handles=model_handles+[Line2D([],[],c="grey",lw=1.5,label="Large ensemble"),Line2D([],[],c="grey",lw=1.5,ls="--",label="Bootstrap\n(median, 5-95%)")]
 ax.legend(handles=handles,fontsize=fs-1,loc="upper left",frameon=False)
-ax.set_xlabel("Relative uncertainty due to\ninternal variability, X (%)",fontsize=fs)
-ax.set_ylabel("Fraction of global surface area below X",fontsize=fs)
+ax.set_xlabel("Relative uncertainty due to internal\n"+r"variability, $\chi$ = X (%)",fontsize=fs)
+ax.set_ylabel("Fraction of global surface area\n"+r"with $\chi$ below X",fontsize=fs)
 ax.set_xlim([relerrs[0],relerrs[-1]])
 ax.set_ylim([0,1])
 style(ax)
@@ -164,8 +164,8 @@ ax.set_xscale("log")
 ax.set_yscale("log")
 ax.set_xlim(lim)
 ax.set_ylim(lim)
-ax.set_xlabel("Relative uncertainty, large ensemble (%)",fontsize=fs)
-ax.set_ylabel("Relative uncertainty, bootstrap (%)",fontsize=fs)
+ax.set_xlabel(r"Relative uncertainty $\chi$, large ensemble (%)",fontsize=fs)
+ax.set_ylabel(r"Relative uncertainty $\chi$, bootstrap (%)",fontsize=fs)
 ax.legend(fontsize=fs-1,loc="upper left",frameon=False)
 style(ax)
 annotate_panel(ax,"d",x=-0.2)

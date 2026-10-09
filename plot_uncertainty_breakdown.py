@@ -126,7 +126,7 @@ for m, model in enumerate(models+["ERA5"]):
 		cax= fig.add_subplot(gs[0,4])
 		pl3=coefs_av.plot(ax=ax3,transform=ccrs.PlateCarree(),cmap="RdBu_r",vmin=-2,vmax=2,cbar_ax=cax,add_colorbar=True,cbar_kwargs={"orientation": "vertical","label":"Relative uncertainty (%)","extend":"both"})
 		cbar=pl3.colorbar
-		cbar.set_label("GMST-TX5 slope mean (C)",fontsize=fs,rotation=90)
+		cbar.set_label("Mean GMST-T5d slope\n(°C K$^{-1}$)",fontsize=fs,rotation=90)
 		cbar.ax.tick_params(labelsize=fs)
 	else:
 		pl3=coefs_av.plot(ax=ax3,transform=ccrs.PlateCarree(),cmap="RdBu_r",vmin=-2,vmax=2,add_colorbar=False)
@@ -144,7 +144,7 @@ for m, model in enumerate(models+["ERA5"]):
 		cax= fig.add_subplot(gs[1,4])
 		pl3=coefs_std.plot(ax=ax3,transform=ccrs.PlateCarree(),cmap="viridis",vmin=0,vmax=2,cbar_ax=cax,add_colorbar=True,cbar_kwargs={"orientation": "vertical","label":"Relative uncertainty (%)","extend":"max"})
 		cbar=pl3.colorbar
-		cbar.set_label("GMST-TX5 slope std (C)",fontsize=fs,rotation=90)
+		cbar.set_label("Absolute uncertainty,\n"+r"$\sigma$ (°C K$^{-1}$)",fontsize=fs,rotation=90)
 		cbar.ax.tick_params(labelsize=fs)
 	else:
 		pl3=coefs_std.plot(ax=ax3,transform=ccrs.PlateCarree(),cmap="viridis",vmin=0,vmax=2,add_colorbar=False)
@@ -162,7 +162,7 @@ for m, model in enumerate(models+["ERA5"]):
 		cax= fig.add_subplot(gs[2,4])
 		pl3=coefs_relerr.plot(ax=ax3,transform=ccrs.PlateCarree(),cmap="viridis",vmin=0,vmax=vmax,cbar_ax=cax,add_colorbar=True,cbar_kwargs={"orientation": "vertical","label":"Relative uncertainty (%)","extend":"max"})
 		cbar=pl3.colorbar
-		cbar.set_label("GMST-TX5 slope rel. unc. (%)",fontsize=fs,rotation=90)
+		cbar.set_label("Relative uncertainty,\n"+r"$\chi$ (%)",fontsize=fs,rotation=90)
 		cbar.ax.tick_params(labelsize=fs)
 	else:
 		pl3=coefs_relerr.plot(ax=ax3,transform=ccrs.PlateCarree(),cmap="viridis",vmin=0,vmax=vmax,add_colorbar=False)

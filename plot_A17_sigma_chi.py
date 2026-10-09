@@ -12,11 +12,11 @@ skill="/gpfs/scratch/bsc32/bsc400019/attribution/skill/"
 models=["MIROC6","MPI-ESM1-2-LR","CanESM5"]
 model_cols=["tab:blue","tab:orange","tab:green"]
 #metric label, file tag, colour (warm: temperature, cool: precipitation)
-metrics=[(r"$TX5d$","tas_X5_block5_100","#b2182b"),
+metrics=[(r"$T5d$","tas_X5_block5_100","#b2182b"),
 	(r"$T99p$","tas_0.99_exp_agg_NOPE_membspec_block5_100","#ef8a62"),
-	(r"$PX5d$","pr_X5_block5_200_2025","#2166ac"),
+	(r"$P5d$","pr_X5_block5_200_2025","#2166ac"),
 	(r"$P99p$","pr_0.99_exp_agg_NOPE_membspec_block5_200","#67a9cf"),
-	(r"$PX5d$"+"\n(1940-2100)","pr_X5_block5_200_2100","#542788")]
+	(r"$P5d$"+"\n(1940-2100)","pr_X5_block5_200_2100","#542788")]
 
 fs=6
 cm=1/2.54
@@ -103,8 +103,8 @@ ax.set_xscale("log")
 ax.set_yscale("log")
 ax.set_xlim(lim)
 ax.set_ylim(lim)
-ax.set_xlabel("Relative uncertainty, large ensemble (%)",fontsize=fs)
-ax.set_ylabel("Relative uncertainty, bootstrap (%)",fontsize=fs)
+ax.set_xlabel(r"Relative uncertainty $\chi$, large ensemble (%)",fontsize=fs)
+ax.set_ylabel(r"Relative uncertainty $\chi$, bootstrap (%)",fontsize=fs)
 ax.legend(fontsize=fs-1,loc="upper left",frameon=False)
 style(ax)
 ax.annotate("b",xy=(-0.2,1.12),xycoords="axes fraction",fontsize=fs+2,fontweight="bold")

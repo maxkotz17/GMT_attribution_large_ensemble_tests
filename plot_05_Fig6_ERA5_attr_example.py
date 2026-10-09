@@ -48,14 +48,14 @@ city_dict = {
     "Berlin":        {"lat": 52.5200,  "lon": 13.4050},
     "Jakarta":       {"lat": -6.2088,  "lon": 106.8456},
     "Sydney":        {"lat": -33.8688, "lon": 151.2093},
-    "Sao Paulo":     {"lat": -23.5505, "lon": -46.6333},
+    "São Paulo":     {"lat": -23.5505, "lon": -46.6333},
     "Johannesburg":  {"lat": -26.2041, "lon": 28.0473},
     "Houston":       {"lat": 29.7604,  "lon": -95.3698},
     "New York":      {"lat": 40.7128,  "lon": -74.0060},
     "Las Vegas":     {"lat": 36.1699,  "lon": -115.1398},
 }
 
-cities=["Madrid","Riyadh","Delhi","Jakarta","Sydney","Sao Paulo"]
+cities=["Madrid","Riyadh","Delhi","Jakarta","Sydney","São Paulo"]
 lats=[city_dict[x]["lat"] for x in cities]
 lons=[city_dict[x]["lon"] for x in cities]
 
@@ -88,9 +88,9 @@ cax = inset_axes(ax3, width="50%", height="7%", loc="lower center",
                  bbox_to_anchor=(0, -0.08, 1, 1),
                  bbox_transform=ax3.transAxes, borderpad=0)
 
-pl3=relerrmap.plot(ax=ax3,transform=ccrs.PlateCarree(),cmap="viridis",vmin=0,vmax=100,cbar_ax=cax,add_colorbar=True,cbar_kwargs={"orientation": "horizontal","label":"Relative uncertainty (%)","extend":"max"})
+pl3=relerrmap.plot(ax=ax3,transform=ccrs.PlateCarree(),cmap="viridis",vmin=0,vmax=100,cbar_ax=cax,add_colorbar=True,cbar_kwargs={"orientation": "horizontal","label":r"Relative uncertainty, $\chi$ (%)","extend":"max"})
 cbar = pl3.colorbar
-cbar.set_label("Relative uncertainty (%)", fontsize=fs)
+cbar.set_label(r"Relative uncertainty, $\chi$ (%)", fontsize=fs)
 cbar.ax.tick_params(labelsize=fs)
 
 #cbar=pl3.colorbar
@@ -116,7 +116,7 @@ for c, city in enumerate(cities):
 	if int(c/3)==1:
 		ax.set_xlabel("Year",fontsize=fs)
 	if c%3==0:
-		ax.set_ylabel("TX5 (°C)",fontsize=fs)
+		ax.set_ylabel("T5d (°C)",fontsize=fs)
 	ax.tick_params(labelsize=fs)	
 	ax.set_title(city,fontsize=fs)
 	ax.set_xlim([1940,2024])
