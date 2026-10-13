@@ -133,11 +133,11 @@ climex_attr=np.squeeze(np.array(climex_attr))
 coefs=np.array(coefs_l)
 
 letters=list(string.ascii_lowercase)
-fs=6
+fs=7
 cm=1/2.54
-w1=4.7*cm
-h1=4.5*cm
-city_labels=["Berlin (52.5°N, 13.4°E)","São Paulo (23.6°S, 46.6°W)"]
+w1=4.0*cm
+h1=3.7*cm
+city_labels=["Berlin\n(52.5°N, 13.4°E)","São Paulo\n(23.6°S, 46.6°W)"]
 
 #highlight three members spanning the range of attributable change in the first local panel (Berlin temperature extremes),
 #kept the same across all panels; all other members in grey, ensemble mean in black
@@ -164,15 +164,15 @@ plt.close()
 widths=[w1]*4
 heights=[h1*1.3]+[h1]*2
 fig=plt.figure(figsize=(sum(widths)+1.4,sum(heights)+1.1))
-gs=fig.add_gridspec(ncols=len(widths),nrows=len(heights),width_ratios=widths,height_ratios=heights,wspace=0.75,hspace=0.45)
+gs=fig.add_gridspec(ncols=len(widths),nrows=len(heights),width_ratios=widths,height_ratios=heights,wspace=0.8,hspace=0.55)
 
 #a: smoothed GMST
 ax=plt.subplot(gs[0,1:3])
 plot_members(ax,years,GMT.values)
 ax.set_xlabel('Year',fontsize=fs)
-ax.set_ylabel('Global-mean surface temperature (°C)',fontsize=fs)
+ax.set_ylabel("Global-mean surface\ntemperature (°C)",fontsize=fs)
 style(ax)
-ax.annotate("a",xy=(-0.12,1.03),xycoords="axes fraction",fontsize=fs+2,fontweight="bold")
+ax.annotate("a",xy=(-0.17,1.03),xycoords="axes fraction",fontsize=fs+2,fontweight="bold")
 handles=[plt.Line2D([],[],c=hl_cols[k],lw=0.9,label="Member "+str(members[m])) for k, m in enumerate(hl)]
 handles+=[plt.Line2D([],[],c="grey",alpha=0.4,lw=0.5,label="Other members"),plt.Line2D([],[],c="k",lw=1.3,label="Ensemble mean")]
 ax.legend(handles=handles,fontsize=fs,frameon=False,loc="upper left",bbox_to_anchor=(1.03,1))
@@ -185,7 +185,7 @@ for v, varn in enumerate(varns):
 		name="P"
 		unit="(mm day$^{-1}$)"
 	if metric=="X5":
-		name+="5d"
+		name+="5dx"
 		slope_unit="("+unit[1:-1]+" K$^{-1}$)"
 	elif metric=="0.99_exp":
 		name+="99p"
@@ -202,7 +202,7 @@ for v, varn in enumerate(varns):
 			ax.set_ylabel(name+" "+unit,fontsize=fs)
 		style(ax)
 		ax.set_title(city_labels[i],fontsize=fs)
-		ax.annotate(letters[1+v*2+i],xy=(-0.12,1.05),xycoords="axes fraction",fontsize=fs+2,fontweight="bold")
+		ax.annotate(letters[1+v*2+i],xy=(-0.2,1.05),xycoords="axes fraction",fontsize=fs+2,fontweight="bold")
 
 		#f-i: change correlated with GMST since the first year (fitted values relative to the first year), with the
 		#distribution of the GMST regression slope across members on the right and its relative uncertainty (eq. 3)
@@ -215,7 +215,7 @@ for v, varn in enumerate(varns):
 		if i==0:
 			ax.set_ylabel("Attributable change in\n"+name+" since "+str(int(years[0]))+" "+unit,fontsize=fs)
 		style(ax)
-		ax.annotate(letters[5+v*2+i],xy=(-0.12,1.05),xycoords="axes fraction",fontsize=fs+2,fontweight="bold")
+		ax.annotate(letters[5+v*2+i],xy=(-0.2,1.05),xycoords="axes fraction",fontsize=fs+2,fontweight="bold")
 		beta=coefs[v,:,i]
 		#slopes as estimated (Poisson: change in log frequency per K), on which chi is computed
 		b=beta
@@ -231,8 +231,9 @@ for v, varn in enumerate(varns):
 		axh.yaxis.set_label_position("right")
 		axh.set_title(r"$\beta$ "+slope_unit,fontsize=fs-1)
 		axh.tick_params(axis="both",labelsize=fs-1)
+		axh.yaxis.set_major_locator(plt.MaxNLocator(nbins=3))
 		axh.set_xlabel("Members",fontsize=fs-1)
-		print(name,city_labels[i],"chi %.0f%%"%chi)
+		print(name,city_labels[i].replace("\n"," "),"chi %.0f%%"%chi)
 
 if membspec:
 	plt.savefig('figs/member_examples/' + model + "_taspr_" + metric + '_' + '_example_membspec_v2.png',bbox_inches='tight',dpi=300)

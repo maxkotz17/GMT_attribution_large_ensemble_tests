@@ -80,7 +80,7 @@ if varn=="tas":
 	vmax=100
 elif varn=="pr":
 	vmax=200
-#absolute uncertainty in % per K (Poisson slopes x100, i.e. approximately % change in frequency per K; P5d already in % of the
+#absolute uncertainty in % per K (Poisson slopes x100, i.e. approximately % change in frequency per K; P5dx already in % of the
 #1940-1979 mean per K), on a linear scale from 0 shared across models, with the colour map of the relative uncertainty
 sig_scale=100 if "0.99" in metric else 1
 sig_vmax=50

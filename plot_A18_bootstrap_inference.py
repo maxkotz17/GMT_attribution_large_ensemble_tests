@@ -15,11 +15,11 @@ from matplotlib.lines import Line2D
 
 skill="/gpfs/scratch/bsc32/bsc400019/attribution/skill/"
 #metric label, file tag, colour (as Figure 5)
-metrics=[(r"$T5d$","tas_X5_block5_100","#b2182b"),
+metrics=[(r"$T5dx$","tas_X5_block5_100","#b2182b"),
 	(r"$T99p$","tas_0.99_exp_agg_NOPE_membspec_block5_100","#ef8a62"),
-	(r"$P5d$","pr_X5_block5_200_2025","#2166ac"),
+	(r"$P5dx$","pr_X5_block5_200_2025","#2166ac"),
 	(r"$P99p$","pr_0.99_exp_agg_NOPE_membspec_block5_200","#67a9cf"),
-	(r"$P5d$ (1940-2100)","pr_X5_block5_200_2100","#542788")]
+	(r"$P5dx$ (1940-2100)","pr_X5_block5_200_2100","#542788")]
 min_area=0.005 #only bins covering at least 0.5% of the global area, in at least two models
 
 fs=6

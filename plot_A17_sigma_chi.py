@@ -12,11 +12,11 @@ skill="/gpfs/scratch/bsc32/bsc400019/attribution/skill/"
 models=["MIROC6","MPI-ESM1-2-LR","CanESM5"]
 model_cols=["tab:blue","tab:orange","tab:green"]
 #metric label, file tag, colour (warm: temperature, cool: precipitation)
-metrics=[(r"$T5d$","tas_X5_block5_100","#b2182b"),
+metrics=[(r"$T5dx$","tas_X5_block5_100","#b2182b"),
 	(r"$T99p$","tas_0.99_exp_agg_NOPE_membspec_block5_100","#ef8a62"),
-	(r"$P5d$","pr_X5_block5_200_2025","#2166ac"),
+	(r"$P5dx$","pr_X5_block5_200_2025","#2166ac"),
 	(r"$P99p$","pr_0.99_exp_agg_NOPE_membspec_block5_200","#67a9cf"),
-	(r"$P5d$"+"\n(1940-2100)","pr_X5_block5_200_2100","#542788")]
+	(r"$P5dx$"+"\n(1940-2100)","pr_X5_block5_200_2100","#542788")]
 
 fs=6
 cm=1/2.54

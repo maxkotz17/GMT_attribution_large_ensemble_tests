@@ -26,11 +26,11 @@ cols=["tab:blue","tab:orange","tab:green"]
 skill="/gpfs/scratch/bsc32/bsc400019/attribution/skill/"
 tag=varn+"_"+metric+"_block"+str(W)+"_"+str(relerr_cutoff)+endyr
 #metrics of panels b and d: label, file tag, colour (warm: temperature, cool: precipitation)
-metrics=[(r"$T5d$","tas_X5_block5_100","#b2182b"),
+metrics=[(r"$T5dx$","tas_X5_block5_100","#b2182b"),
 	(r"$T99p$","tas_0.99_exp_agg_NOPE_membspec_block5_100","#ef8a62"),
-	(r"$P5d$","pr_X5_block5_200_2025","#2166ac"),
+	(r"$P5dx$","pr_X5_block5_200_2025","#2166ac"),
 	(r"$P99p$","pr_0.99_exp_agg_NOPE_membspec_block5_200","#67a9cf"),
-	(r"$P5d$"+"\n(1940-2100)","pr_X5_block5_200_2100","#542788")]
+	(r"$P5dx$"+"\n(1940-2100)","pr_X5_block5_200_2100","#542788")]
 
 relerrs=[(x+1)*10 for x in range(20)]
 

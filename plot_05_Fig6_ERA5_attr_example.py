@@ -116,7 +116,7 @@ for c, city in enumerate(cities):
 	if int(c/3)==1:
 		ax.set_xlabel("Year",fontsize=fs)
 	if c%3==0:
-		ax.set_ylabel("T5d (°C)",fontsize=fs)
+		ax.set_ylabel("T5dx (°C)",fontsize=fs)
 	ax.tick_params(labelsize=fs)	
 	ax.set_title(city,fontsize=fs)
 	ax.set_xlim([1940,2024])
